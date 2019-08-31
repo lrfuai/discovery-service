@@ -19,4 +19,7 @@ io.sockets.on('connection', function (socket) { // WebSocket Connection
     });
 });
 
-module.exports = users;
+module.exports = {
+    CHANNELLS,
+    users
+}
