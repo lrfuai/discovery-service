@@ -5,5 +5,5 @@ const server = express();
 socket.setup(server);
 
 module.exports = {
-    server,
+    server
 }

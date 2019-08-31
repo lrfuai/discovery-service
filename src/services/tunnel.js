@@ -1,5 +1,3 @@
-const logger = require('../logger');
-
 let io;
 
 const setup = (server) => {
@@ -7,14 +5,10 @@ const setup = (server) => {
     io = require('socket.io')(http) //require socket.io module and pass the http object (server)
 };
 
-const sockets = () => {
-    if(!io) {
-        throw 'Sockets not available';
-    }
-    return io.sockets;
-}
-
 module.exports = {
     setup,
-    sockets
+    io: () => {
+        if(!io) { throw 'Sockets not available' }
+        return io;
+    }
 }
