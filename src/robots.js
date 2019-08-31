@@ -10,11 +10,11 @@ const CHANNELLS = {
 const robots = [];
 
 io.sockets.on('connection', function (socket) { // WebSocket Connection
-    socket.emit(CHANNELLS.CONNECTED, robots);
+    socket.emit(CHANNELLS.CONNECTED, JSON.stringify(robots));
     logger.info(`robots conectados: ${robots.length}`);
  
     socket.on('disconnect', function() {
-        socket.emit(CHANNELLS.CONNECTED, robots);
+        socket.emit(CHANNELLS.CONNECTED, JSON.stringify(robots));
         logger.info(`robots conectados: ${robots.length}`);
     });
 });

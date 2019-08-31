@@ -14,34 +14,29 @@ sockets.on('connection', function (socket) { // WebSocket Connection
 
     logger.info(`Robot mac ${g_robot_mac} presionado: ${boton}`);
             
-    var sData = "";         
+    var sData = "";
     switch(boton) {
-      case 'btn_status':          
-        packet.data_init
-        packet.mac_id = g_robot_mac
-        packet.class = "comando"
-        packet.type = "status"
-        sData = packet.Armar_Json
-        //sData =  "/" + g_robot_mac + '/comando/status/-/-/-/-/-';
-        //sData =  "/" + g_robot_mac + '/comando/status/-/-/-/-/-';
-        break;  
+      case 'btn_status':
+        JSON.stringify({ 
+          mac_id: g_robot_mac, 
+          class: 'comando', 
+          type = 'status'
+        });
+        break;
       case 'btn_discovery':
-         //sData = "/" + Robot_ID + '/comando/discovery/-/-/-/-/-';
-         sData = "";
-         clear_array_Robot_ID(); //elimina todos los elementos del array
-         mqtt_publish(topic_robots_discovery,"todos digamenme su client_ID");
-         break;
+        clear_array_Robot_ID(); //elimina todos los elementos del array
+        mqtt_publish(topic_robots_discovery,"todos digamenme su client_ID");
+        break;
       case 'btn_up':
-        packet.data_init
-        packet.mac_id = g_robot_mac
-        packet.class = "comando"
-        packet.type = "mover"
-        packet.action = "forward"
-        packet.delay_type = "xtiempo"
-        packet.value_numeric1 = "500" // valor en milisengundos del tiempo en on
-        packet.value_numeric2 = "50"  // valor de la pontencia de los motores
-        sData = packet.Armar_Json
-        //sData = "/" + g_robot_mac + '/comando/mover/-/forward/xtiempo/500/400';
+        JSON.stringify({
+          mac_id = g_robot_mac,
+          class: "comando",
+          type: "mover",
+          action: "forward",
+          delay_type: "xtiempo",
+          value_numeric1: "500", // valor en milisengundos del tiempo en on
+          value_numeric2: "50"  // valor de la pontencia de los motores
+        })
         break;
       case 'btn_down':
         packet.data_init
