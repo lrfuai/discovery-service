@@ -1,17 +1,15 @@
 const express = require('express');
-const listEndpoints = require('express-list-endpoints');
 const package = require('./package');
 const logger = require('./src/logger');
 const socketService = require('./src/services/socket.service');
+const server = express();
 
 const PORT = 8080;
 
-const server = express();
 server.use(express.static(__dirname + '/public'));
-socketService.setup(server);
 
-listEndpoints(server).map(({methods, path}) => logger.log(`Exposed ${path} :: (${methods.join(',')})`));
+const http = socketService.setup(server);
 
-server.listen(PORT, () => logger.log(`${package.name} v${package.version} listening on port ${PORT}`));
+http.listen(PORT, () => logger.log(`${package.name} v${package.version} listening on port ${PORT}`));
 
-module.exports = server;
+module.exports = http;

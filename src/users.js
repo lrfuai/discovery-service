@@ -10,7 +10,7 @@ const CHANNELLS = {
 
 const users = [];
 
-sockets.on('connection', function (socket) {// WebSocket Connection
+sockets.on('connection', socket => {
 
     //envia los usuario a lo el actual socket ID
     socket.emit(CHANNELLS.CONNECTED, users); 
