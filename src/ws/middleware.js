@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi');
+const logger = require('../logger');
 
 const user_id_needed = (req, res) => {
   const {user_id} = req.params;

@@ -6,9 +6,7 @@ const user_update = ({user_id, alias},res) => {
   } catch(error) {
     res.status(400).send(error);
   }
-  
 }
-
 
 module.exports = {
   user_update,
