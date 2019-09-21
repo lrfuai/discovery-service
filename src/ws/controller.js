@@ -1,11 +1,7 @@
-const users = require('../users');
 
-const user_update = ({user_id, alias},res) => {
-  try {
-    users.getById(user_id).alias = alias;
-  } catch(error) {
-    res.status(400).send(error);
-  }
+
+const user_update = ({user, alias},res) => {
+  user.alias = alias;
 }
 
 module.exports = {

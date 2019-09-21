@@ -5,7 +5,7 @@ module.exports = server => {
   
   server.put(
       'users/:user_id',
-      middleware.user_id_needed,
+      middleware.valid_user_needed,
       middleware.user_alias_needed,
       controller.user_update
     )

@@ -9,9 +9,15 @@ const CHANNELLS = {
 }
 
 const users = [];
-
+/*
 sockets.on('connection', socket => {
+  const user = {
+    id: socket.id,
+    alias: 'none'
+  };
+  socket.broadcast.emit(CHANNELLS.CONNECTED, users);
 
+  /*
     //envia los usuario a lo el actual socket ID
     socket.emit(CHANNELLS.CONNECTED, users); 
 
@@ -34,13 +40,13 @@ sockets.on('connection', socket => {
     socket.on(CHANNELLS.ADDED, function( email, zona, navegador) {
         users.push({ email, zona, navegador });
     });
-
+    
 });
-
+*/
 const getById = id => {
   const filtered = users.filter(user => user.id === id);
   if(filtered.length !== 1) {
-    return 
+    return filtered;
   }
   throw new Error(`Unable to find user '${id}' in ${users.map(user => user.id).join(',')}`);
 }
