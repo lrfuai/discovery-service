@@ -35,9 +35,18 @@ sockets.on('connection', socket => {
         users.push({ email, zona, navegador });
     });
 
-}); 
+});
+
+const getById = id => {
+  const filtered = users.filter(user => user.id === id);
+  if(filtered.length !== 1) {
+    return 
+  }
+  throw new Error(`Unable to find user '${id}' in ${users.map(user => user.id).join(',')}`);
+}
 
 module.exports = {
-    CHANNELLS,
-    users
+  CHANNELLS,
+  users,
+  getById
 };

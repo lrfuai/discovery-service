@@ -10,6 +10,7 @@
   "author": "LRF UAI",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^16.1.4",
     "express": "^4.17.1",
     "moment": "^2.24.0",
     "mqtt": "^3.0.0",
