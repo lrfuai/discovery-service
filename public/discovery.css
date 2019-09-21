@@ -1,0 +1,137 @@
+<style>
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+body, html { height:100%;
+	margin:0;
+	padding:0;
+	width:100%;
+  background-color:#EDE2C1;
+  color: #F5EEE4;
+  }
+
+.box {
+	width:100%%;
+	overflow:hidden;
+	background-color:black;
+	border: none;
+}
+
+.conectados {
+  text-align: center; 
+  background-color:rgb(255, 255,255) ; 
+  border:2px solid black; 
+  color:rgb(0,0,0);
+}
+
+#menu{
+	background-color:black;
+	}
+#tools{
+	background-color:blue;
+	}
+#interface{
+	background-color:black;
+	height:20%;
+	color:white;
+	}
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  
+}
+
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 4px 4px;
+  text-decoration: none;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 10px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 4px 4px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 100px;
+  vertical-align: middle;  
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.button_1 {
+  padding: 12px 12px;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 2px #999;
+}
+.button_1:hover {background-color: #3e8e41}
+
+.button_1:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.centrar{
+	display:block;
+	margin:auto;
+	text-align: center
+}
+.end{
+	border-top: 3px solid rgba(0, 0, 0, 0.3);
+  background: #EDE2C1;
+	color:black;
+	padding: 20px;
+}
+
+
+img { vertical-align: middle; }
+
+
+</style>

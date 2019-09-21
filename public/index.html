@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<head>
+	<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+	<meta charset="UTF-8">
+	<meta name="MobileOptimized" content="width" />
+	<meta name="HandheldFriendly" content="true" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <LINK href="discovery.css" title="ctrl_robot" rel="stylesheet" type="text/css">
+	<title>Control robots</title>
+
+</head>
+<body oncopy="alert('Opcion deshabilitada');return false" oncontextmenu="alert('Robot dice, gracias por visitar esta sitio!');return false" onselectstart="return false" ondragstart="return false">
+	<div class='box' id="header">
+	    <div class="centrar" ><h1> Laboratorio de robotica fisica</h1></div>
+			<div class='conectados'>
+	    <table width="340" border="0">
+          <tr>
+            <td width="56" rowspan="2"><a href="http://innovativalab.com" target="_parent"><img src="images/logo_innovativalab.png" alt="home" width="50" height="49" border="0"></a></td>
+            <td width="141"><label id='usuarios_conectados'>Usuarios: </label></td>
+            <td width="129"><label id='robots_conectados'>
+                <label id='robots_conectados'>Robots: 0 </label></td>
+          </tr>
+          <tr>
+            <td><label>Usuario</label>
+              &nbsp;
+              <label id="robot_name"></label></td>
+            <td><label id="user_name"></label>
+                <label>Robot</label>
+              &nbsp;
+              <label id="robot_name"></label></td>
+          </tr>
+        </table>
+	    <label id='usuarios_conectados'></label>
+			</div>
+		 <br />
+    <div style=" text-align: center;background-color:rgb(199, 248, 145); border:2px solid black;">
+        <h3 style="color:Blue;"><p id="robot_message"></p></h3>       
+    </div>
+		
+	</div>
+
+	
+	<div class="navbar">
+	  <a href="#"><img src="images/login.png" width="50" height="50" name="menu" id="usuario"></a>
+		
+	  <div class="dropdown">
+		<button name="menu" id="robot" onClick="agregar_robot()" class="dropbtn"><img src="images/robot.png" alt="Robot" width="50" height="50" longdesc="Elejir robot"></button>
+		<div class="dropdown-content"> 
+		  <div id="robots_menu">
+		  </div>
+		</div>
+	  </div> 
+	</div> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script> 
+	<script>
+			var g_robot_mac = "";
+			var g_robot_name = "?";
+			var g_array_Robot_ID = [];
+
+			function Usuario_mail() {
+				var email = prompt("Por favor ingresa tu email:", "@");
+				var navegador = navigator.appName;
+				var zona = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				socket.emit('usuario_ingresado',email,zona,navegador);
+			}
+
+		  function menu_robot()
+			{
+
+			  console.log("menu robot" + nro);
+			}
+				
+
+			function agregar_robot()
+			{
+				sMenu = "";
+			   for (i = 0; i < g_array_Robot_ID.length; i++) {   
+    			  sMenu = sMenu + "<div >";
+				    sMenu = sMenu + "<a name='menu_robot' id='"+ i + "'>";
+				    sMenu = sMenu + "<img src='images/robot.png' name='menu_robot' id='"+ i + "' alt=''  width='30' height='30' style='vertical-align: middle;' />";
+						sMenu = sMenu + " " + g_array_Robot_ID[i].name + "</a></div>";			
+			  //console.log(sMenu);
+			   }
+				document.getElementById("robots_menu").innerHTML = sMenu;
+				
+				}
+				
+			function agregar_robot_old()
+			{
+				sMenu = "";
+				sListado = "";
+			   for (i = 0; i < 10; i++) {   
+    			  sMenu = sMenu + "<div >";
+				    sMenu = sMenu + "<a name='menu_robot' id='"+ i+ "'>";
+				    sMenu = sMenu + "<img src='images/robot.png' name='menu_robot' id='"+ i+ "' alt=''  width='30' height='30' style='vertical-align: middle;' />";
+						sMenu = sMenu + " Robot " + i + "</a></div>";
+			   }
+			  document.getElementById("robots_menu").innerHTML = sMenu;
+			  //console.log(sMenu);
+		    }
+		  
+		  function orden_robot(robot_mac,accion)
+		  {
+				 console.log("Robot mac: " + g_robot_mac);
+				 console.log("Accion: " + accion);	
+				 if (accion == "btn_discovery")
+				    { 
+							socket.emit('button_click',g_robot_mac, accion);	
+						}					 				
+				 else 
+				  {
+				 		if (g_robot_mac == "") 
+								{
+									window.alert("Primero debes seleccionar un robot!");
+								}
+						else
+								{
+									if(event.target.id == "btn_servo")
+										{
+											var srv_grados = prompt("Por favor ingrese los grados para mover el servomotor.", "90");
+											socket.emit('button_click',g_robot_mac, accion,1,srv_grados);
+										}
+									else 
+										{	
+										  socket.emit('button_click',g_robot_mac, accion);
+										}
+								}										
+				   }
+		  }
+		  
+		  
+		  window.onclick = function(event) {
+				  console.log(event.target.name);
+				  console.log(event.target.id);
+		
+				  switch(event.target.name)
+				  	{
+				  		case "menu_robot":						   
+									console.log("menu_robot numero:" + event.target.id);
+									g_robot_mac = g_array_Robot_ID[event.target.id].mac;
+									g_robot_name = g_array_Robot_ID[event.target.id].name; 
+									document.getElementById('robot_name').innerHTML =  g_array_Robot_ID[event.target.id].name;
+									document.getElementById('robot_mac').innerHTML =  g_array_Robot_ID[event.target.id].mac;							
+									break;
+
+							case "menu":
+							    
+					    	  switch(event.target.id)
+				  	             {					
+								   case "usuario":	   
+									   	console.log("Ingresa tu email ");
+											Usuario_mail();
+									    break; 	
+								 	}
+							 		break;	 
+
+							case "boton":		
+									//console.log("boton id: " + event.target.id); 
+									
+  								if (event.target.id != "btn_status" && event.target.id != "btn_discovery") 
+									{
+										mostrar_interface("Boton presionado: " + event.target.alt );
+									};
+
+									orden_robot(g_robot_mac,event.target.id);
+									break;
+					       
+					}
+				  
+				   // if (!event.target.matches('.dropbtn')) {
+				   // console.log("click en menu");  }
+		   }
+		// socket io
+		
+
+		function mostrar_interface(msg)
+		{			 
+					//console.log(msg)	;	
+				  document.getElementById('interface' ).innerHTML = msg; 
+		
+		}
+		
+		var socket = io(); //load socket.io-client and connect to the host that serves the page
+
+		socket.on("robots_listado", function(array_robots) {
+						let listado = "Robots conectados: <br>";
+						g_array_Robot_ID = array_robots;
+						for (var i = 0; i < g_array_Robot_ID.length; i++) {
+								console.log(g_array_Robot_ID[i]);
+								listado =  listado + (i+1) + " " + g_array_Robot_ID[i].name + "<br>";
+						}  			
+						document.getElementById('interface').innerHTML = listado;
+						});
+			
+						
+		socket.on("usuarios-conectados", function(msg) {
+						document.getElementById('usuarios_conectados').innerHTML = msg;
+						mostrar_interface(msg);
+					});
+						
+		socket.on("robots-conectados", function(msg) {
+						document.getElementById('robots_conectados').innerHTML =  msg;
+						mostrar_interface(msg);
+					});
+
+	 
+	  socket.on('robots_publicando', function(robot_mac,msg) {
+			console.log(robot_mac + "/" + msg);
+			if (robot_mac == g_robot_mac)	 document.getElementById('robot_message' ).innerHTML = msg;
+			mostrar_interface(msg);			
+		});
+
+    socket.on('robots_cliente_id', function(robot_mac,msg_json) {
+			if (robot_mac == g_robot_mac)	 document.getElementById('robot_message' ).innerHTML = msg_json.name;
+			mostrar_interface(msg);
+		});
+
+    socket.on('robots_escuchando', function(nro_robot,msg) {
+			if (robot_mac == g_robot_mac)	 document.getElementById('robot_message').innerHTML = msg;
+			mostrar_interface(msg);
+		});
+
+	  socket.on('registrar_usuario', function(robot_mac,email,msg) {
+			 
+							document.getElementById("user_name").innerHTML = email;		
+							if (robot_mac == g_robot_mac)	document.getElementById('robot_message' ).innerHTML = msg;							
+							mostrar_interface(msg);
+
+					 });
+						
+	</script>
+	
+	
+<div class='navbar' id="tools">
+     <table width=100% border="0" align="center">
+     <tr>
+      <td><a href="#"><img src="images/arriba.png" name="boton"id="btn_up" alt="Adelante" width="60" height="60" longdesc="Mover robot adelante"></a>
+   <a href="#"><img src="images/abajo.png" name="boton" id="btn_down" alt="Atras" width="60" height="60" longdesc="Mover robot atras"></a>
+   <a href="#"><img src="images/stop.png" name="boton"id="btn_stop" alt="Detener" width="60" height="60" longdesc="Detener robot"></a>
+   <a href="#"><img src="images/izquierda.png" name="boton" id="btn_left" alt="Izquierda" width="60" height="60" longdesc="Mover robot a la izquierda"></a>
+   
+   <a href="#"><img src="images/derecha.png" name="boton"id="btn_right" alt="Derecha" width="60" height="60" longdesc="Mover robot a la derecha"></a>
+   </td>
+  </tr>
+  <tr>
+  <td>
+     <a href="#"><img src="images/buzzer2.png" name="boton" id="btn_buzzer" alt="Sonido" width="60" height="60" longdesc="Emitir sonido"></a>
+   <a href="#"><img src="images/led2.png" name="boton" id="btn_led" alt="Led" width="60" height="60" longdesc="Activar led"></a>
+   <a href="#"><img src="images/servo_sg90.png" name="boton" id="btn_servo" alt="Servo-motor" width="60" height="60" longdesc="Mover servo"></a>
+   </td>
+  </tr>
+  <tr>
+<td>
+  	 <div align="center">
+  	   <button  class="button_1" name="boton" id="btn_status" >Estado robot</button>
+  	   <button  class="button_1" name="boton" id="btn_discovery"  >Buscar robots</button>
+      </div></td>
+  </tr>
+</table>
+</div>
+
+	</div>
+	<div class='box' id="interface">
+		Mensajes entre robots
+	</div>
+
+	<div class="end centrar" >
+		<!-- comment %} <h3 class="color-subtitle mediano"><strong>NeoRobotic</strong></h3> >-->
+		<img class="img-neo" src="images/logo_neorobotic_2019.png">
+	</div>
+	
+</body>
+</html>

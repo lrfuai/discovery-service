@@ -1,7 +1,7 @@
 const logger = require('./logger');
-const tunnel = require('./services/tunnel');
+const sockerService = require('./services/socket.service');
 
-const {engine,sockets} = tunnel.io;
+const {engine,sockets} = sockerService.io;
 
 const CHANNELLS = {
     CONNECTED : 'usuarios-conectados',

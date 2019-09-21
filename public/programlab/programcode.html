@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<meta charset="utf-8">
+<title>
+  Program Lab codificador
+</title>
+<<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<script src="https://unpkg.com/konva@3.4.1/konva.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <head>
+    <meta charset="utf-8">
+    <title>Lab virtual</title>
+    <style>
+      #contenedor {
+        background-color:#000;
+        margin:0 auto;
+        padding:10px;
+        width:100%;
+        height:100%;
+        float:center;
+      }
+      #cabecera {
+        margin:0 auto; 
+        background-color:#000;
+        padding:10px;
+        width:95%;
+        height:100px;
+        float:center;
+      }
+      #menu {
+        margin:0 auto;  
+        background-color:#60F19C;
+        padding:10px;
+        width:95%;
+        height:100px;
+        float:center;
+      }
+      #contenido {
+        margin:0 auto;  
+        background-color:#fff;
+        padding:10px;
+        width:95%;
+        height:100%;
+        overflow:auto;
+        float:center;
+      }
+
+
+      @media only screen and (max-width:660px) {
+        /* For mobile phones: */
+        #contenedor {
+            width:650px;
+            overflow:auto;
+            }
+        }
+    </style>
+
+  </head>
+  <body>
+    <div id="contenedor">
+      <div id="cabecera">
+        <div id="container_panel"></div>
+      </div>
+
+      <div id="menu";>
+         <div id="container_menu"></div>
+      </div>
+    
+      <div id="contenido">
+          <div id="container_contendio"></div>
+      </div>
+    </div>
+
+    <script>
+      //var stageWidth  = 720;
+      //var stageHeight  = 720;
+      var stageWidth = window.innerWidth * 0.91;
+      if (stageWidth < 720) stageWidth = 720;
+
+      var stageHeight = window.innerHeight;
+
+      var stage_nodos = new Konva.Stage({
+        container: 'container_contendio',
+        width: stageWidth ,
+        height: stageHeight,
+        draggable: true                // para poder mover el escenario 
+      });
+      var assetDir = 'imagenes2/';
+     
+      // agrega layer del fondo compuesto por botones
+      var layer_background = new Konva.Layer();
+      stage_nodos.add(layer_background);
+      
+      // agrega layer que continen los botones como nodos 
+      var layer_nodos = new Konva.Layer();
+      stage_nodos.add(layer_nodos);
+
+      // agrega layer que continen las flechas
+      var layer_flechas = new Konva.Layer();
+      stage_nodos.add(layer_flechas);
+
+      var controles = {
+          innovativalab: {x: 0, y: 10, width:80, scaleX:1, scaleY:1, scr:assetDir + 'innovativalab.png',draggable:false},
+          mensaje: {x: 90, y: 10, width:260,scaleX:1, scaleY:1, scr:assetDir + '',draggable:false},
+          guardar: {x: 360, y: 10, width:80,scaleX:1, scaleY:1, scr:assetDir + 'guardar.png',draggable:false},
+          robot: {x: 450, y: 10, width:80,scaleX:1, scaleY:1, scr:assetDir + 'robot.png',draggable:false},
+          play: {x: 540, y: 10, width:80,scaleX:1, scaleY:1, scr:assetDir + 'play.png',draggable:false},
+        };  
+
+      var botones = {
+          stop:     {x: 30       ,  y:10, scaleX:1, scaleY:1, scr:assetDir + 'stop.png',draggable:false},
+          adelante: {x: 85  + 30 ,  y:10,  scaleX:1, scaleY:1, scr: assetDir + 'adelante.png',draggable:false},
+          atras:    {x: 170 + 30 ,  y:10,  scaleX:1, scaleY:1, scr: assetDir + 'atras.png',draggable:false},
+          izquierda:{x: 255 + 30 ,  y:10, scaleX:1, scaleY:1, scr: assetDir + 'izquierda.png',draggable:false},
+          derecha:  {x: 340 + 30 ,  y:10, scaleX:1, scaleY:1, scr: assetDir + 'derecha.png',draggable:false},
+          led:      {x: 425 + 30 ,  y:10, scaleX:1, scaleY:1, scr: assetDir + 'led.png',draggable:false},
+          buzzer:   {x: 510 + 30 ,  y:10, scaleX:1, scaleY:1, scr: assetDir + 'buzzer.png',draggable:false}
+        };  
+
+        var stage_menu = new Konva.Stage({
+            container: 'container_menu',
+            x:0,
+            y:0,
+            width: stageWidth ,
+            height: 200,
+            draggable: false                // para poder mover el escenario 
+        });
+
+        var layer_menu = new Konva.Layer();
+        stage_menu.add(layer_menu);
+
+        function AgregarBoton(key)
+            {
+                Konva.Image.fromURL(botones[key].scr, function(darthBoton) {
+                        darthBoton.setAttrs({
+                            id:key,
+                            x: botones[key].x,
+                            y: botones[key].y,
+                            scaleX: botones[key].scaleX ,
+                            scaleY: botones[key].scaleY ,
+                            draggable: botones[key].draggable
+                        });
+                        layer_menu.add(darthBoton);
+                        layer_menu.batchDraw();
+                        //this.moveUp();
+
+                        // al mover cualquier nodo redibuja las flechas 
+                        darthBoton.on('mousedown touchstart', function() {
+                            console.log("Boton tocado: " + key); 
+                            writeMessage("Boton tocado: " + key );
+                            AgregarNodo(key);
+                        });
+                        
+                    });
+            }
+
+            // agregar botones  la primera vez  
+            for (var key in botones) {   
+                //console.log(key)   
+                AgregarBoton(key); 
+            };
+            
+
+// INCIO CARGA FONDO -------------------------- carga e inicializa el fondo con botones
+
+    // agusta el tamaño y como minimo 620 x 620
+    function AgustarAnchoRec()
+    {
+     var width = 0;
+     var height = 0;
+
+     if (stageWidth < 620)
+        { width = 550;}
+     else
+        { width = stageWidth-10 ;};
+
+     if (stageHeight < 620)
+        { height = 620;}
+     else
+        { height = stageHeight * 0.85;};
+
+     var size_rect1 = {width:width,height:height};
+     return size_rect1;
+    };
+
+    // agusta el ancho de lo objetos de control
+    function AgustarAnchoText()
+        {
+            var width = 0;
+            if (stageWidth < 800)
+                { width = 260;}
+            else
+                { width = stageWidth * 0.60;};
+
+            return {width:width};
+        };
+
+   // mueve la posicion x de los controles
+    function AgustarPosicionControles()
+        {
+             // for (var n = 0; n <  layer_panel.children.length; n++)
+           
+              /* // corrije manualmente
+              if (layer_panel.children.length > 1)
+              {
+               layer_panel.children[1].x (AgustarAnchoText().width); 
+               layer_panel.children[2].x (AgustarAnchoText().width + 90 ); 
+               layer_panel.batchDraw();
+              }
+             */
+               //recorre por objetos
+               var objetos = layer_panel.children;
+               var xPos = 0;
+               var item = 0;
+               xPos = 0;
+
+               //agusta el ancho del mensaje
+               layer_panel.find('#mensaje')[0].width(AgustarAnchoText());
+               // alinea botones de acuerdo al ancho del mensaje 
+               for (var key in controles) {
+                    //console.log(key + "= ");
+                    //var key = obj.attrs.id;
+                    //layer_panel.find('#' + key)[0].x(xPos);
+                   /* layer_panel.children[item].x (xPos); 
+                    console.log(layer_panel.find('#' + key)[0].x());
+                    console.log(layer_panel.find('#' + key)[0].width());
+                    var w = layer_panel.find('#' + key)[0].width();
+                    var x = layer_panel.find('#' + key)[0].x();
+                    xPos = w + x + 5 ;
+                    item = item + 1;
+                 
+                   console.log("x: " + xPos);
+         */
+                   switch (key) {
+                        case 'innovativalab':
+                              break;
+                        
+                        case 'mensaje':
+                            if (stageWidth < 800) 
+                                {layer_panel.find('#mensaje')[0].width ( controles[key].width) }
+                            else 
+                                {layer_panel.find('#mensaje')[0].width (stageWidth * 0.60)};
+                            break;
+                        
+                        case 'guardar':
+                                if (stageWidth > 800)
+                                    {
+                                        xPos = layer_panel.find('#innovativalab')[0].x() + 
+                                               layer_panel.find('#mensaje')[0].width () +
+                                               layer_panel.find('#guardar')[0].width ()
+                                               + 10 ;
+                                    }
+                                 else   
+                                    {  
+                                        xPos = controles[key].x; 
+                                    }
+
+                                 layer_panel.find('#guardar')[0].x(xPos);
+                                 break;      
+                        case 'robot':
+                            xPos = layer_panel.find('#guardar')[0].x() + 90;
+                            layer_panel.find('#robot')[0].x(xPos);
+                            break;
+                        case 'play':
+                            xPos = layer_panel.find('#robot')[0].x() + 90;
+                            layer_panel.find('#play')[0].x(xPos);
+                            break;
+                    }
+                    
+                   // console.log(obj.attrs.id);
+                   // console.log(obj.attrs.x);
+                }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+               /*
+              var separacion = 0; 
+              for (var n = 0; n <  layer_panel.children.length; n++)
+              {
+
+     
+                if (n)  
+                
+                if (stageWidth < 800)
+                    {layer_panel.children[n].x (540 - separacion);}
+                else
+                    {layer_panel.children[n].x (stageWidth - separacion -110); };
+                separacion = separacion + 85; 
+
+              };
+              */
+
+        };
+      
+// -----------resize de pantalla
+    function fitStageIntoParentContainer() {
+          
+          stageHeight = window.innerHeight;  
+          stageWidth = window.innerWidth * 0.9;
+          if (stageWidth < 720) 
+            {
+              stageWidth = 720;             
+          };
+
+          stage_panel.width ( stageWidth);
+          stage_menu.width ( stageWidth);
+          stage_nodos.width ( stageWidth);
+/*
+          console.log("window.innerWidth: " +  window.innerWidth);
+          console.log("stage_panel: " + stage_panel.width());
+          console.log("stage_menu: " + stage_menu.width());
+          console.log("stage_nodos: " + stage_nodos.width());
+*/          
+          //mensaje.width( AgustarAnchoText().width);
+          
+          
+          layer_menu.batchDraw();
+
+          rect1.width ( AgustarAnchoRec().width);
+          rect1.height ( AgustarAnchoRec().height);
+          layer_background.batchDraw();
+        
+          AgustarPosicionControles();
+          layer_panel.batchDraw();
+          
+      }
+
+    window.addEventListener('resize', fitStageIntoParentContainer);
+    
+
+    var rect1 = new Konva.Rect({
+        id:"rect1",
+        x: 0,
+        y: 0,
+        width: AgustarAnchoRec().width, 
+        height: AgustarAnchoRec().height,
+        fill: 'white',
+        stroke: 'gray',
+        strokeWidth: 1
+      });
+      // add the shape to the layer
+      layer_background.add(rect1);
+      layer_background.batchDraw();
+
+      
+
+      // ---------------- texto mensajes
+  
+
+      var stage_panel = new Konva.Stage({
+        container: 'container_panel',
+        width: stageWidth ,
+        height: 100,
+        draggable: false                // para poder mover el escenario 
+      });
+
+      var layer_panel = new Konva.Layer();
+      stage_panel.add(layer_panel);
+
+    
+     //agrega el layer de texto  
+     function AgregarMensaje(key)
+        {
+            var mensaje = new Konva.Text({
+                        id: key,
+                        x: controles[key].x,
+                        y: 10,
+                        text: ":-)",
+                        fontSize: 30,
+                        fontFamily: 'Calibri',
+                        fill: 'white',
+                        width: controles[key].width, //AgustarAnchoText().width,
+                    });
+            mensaje.on('mousedown touchstart', function() {
+                      fitStageIntoParentContainer();
+                   });
+
+            layer_panel.add(mensaje);
+           
+      };
+/*
+      var control_posx_separacion = 0;
+      function get_control_posx()
+      {
+        var posX = 0;
+        if (stageWidth < 800)
+              { posX = 540 - control_posx_separacion;}
+        else
+              { posX = stageWidth - control_posx_separacion -110; };
+
+        control_posx_separacion = control_posx_separacion + 85;  
+        
+        return posX;
+      };
+*/
+      //agrega el los controles
+      function AgregarControl(key)
+      {
+            Konva.Image.fromURL(controles[key].scr, function(darthControl) {
+                  darthControl.setAttrs({
+                      id:key,
+                      x: controles[key].x, //get_control_posx(), //controles[key].x, // controles[key].x,
+                      y: controles[key].y,
+                      scaleX: controles[key].scaleX ,
+                      scaleY: controles[key].scaleY ,
+                      draggable: controles[key].draggable
+                  });
+                  layer_panel.add(darthControl);
+                  layer_panel.batchDraw();
+                  //this.moveUp();
+
+                  // al presiona un boton control  ejecuta una accion
+                  darthControl.on('mousedown touchstart', function() {
+                      console.log("Control tocado: " + key); 
+                      writeMessage("Control tocado: " + key );
+                      if (key=="play")
+                      {
+                        //AgregarFechas();
+                        //AgustarPosicionControles();
+                        //layer_panel.batchDraw();
+                        //fitStageIntoParentContainer();
+                        orden_robot("1","adelante");
+                      };
+                      if (key=="innovativalab")
+                      {
+                        window.open("http://innovativalab.com", "_blank");
+                      };
+                      if (key=="guardar")
+                      {
+                         save_stage_nodos();
+                      };  
+   
+                  });                  
+              });
+             // AgustarPosicionControles();
+      }
+
+
+      // agregar botones  la primera vez 
+     
+      for (var key in controles) {  
+          //console.log(key);  
+          if (key == "mensaje")
+          {
+            AgregarMensaje(key);
+          }
+          else
+          {
+            AgregarControl(key);
+          };
+      };
+     // AgustarPosicionControles();
+     // console.log(layer_panel);
+  
+     // var shape = layer_panel.find('#mensaje')[0];
+     // console.log(shape);
+
+      
+
+      writeMessage("Ingresa un elemento de control del robot en la secuencia adecuada.");
+      // agrega texto
+      function writeMessage(str)
+      {
+            // referencia al elemento dentro del panel que se cargo con el id
+            layer_panel.find('#mensaje')[0].text(str);
+            layer_panel.draw();
+      };
+
+
+
+// agregar nodos -------------
+      var posNodoXY = {x:10,y:-90}
+      var countNodos = 0;
+
+      //actualiza la posicion del ultimo nodo cuando lo muevo
+      function ActualizaultimoNodoXY()
+      {
+        var lengthNodos = layer_nodos.children.length - 1;
+        var objFrom = layer_nodos.children[lengthNodos].attrs;
+        var endImagenXY = {x:objFrom.x, y:objFrom.y };
+        posNodoXY = endImagenXY;
+      }
+
+      // incrementa la posicion de los nodos con limite 20 nodos
+      var increm = + 100; 
+      function getPosNodoXY()
+      {
+        if (countNodos <= 42)
+        {
+            posNodoXY.y = posNodoXY.y + increm    
+            if (posNodoXY.y > 600)
+            {
+              posNodoXY.x = posNodoXY.x + 130;
+              posNodoXY.y = posNodoXY.y - increm  ;
+              increm = -100; 
+            };
+            if (posNodoXY.y < 10)
+            {
+               increm = +100; 
+               posNodoXY.y = 10;
+               posNodoXY.x = posNodoXY.x + 130;
+            };
+
+        }
+        return(posNodoXY);
+      }
+
+      //agrega nodo
+      function AgregarNodo(key)
+      {
+          if (countNodos < 42)
+            {
+              countNodos ++;
+              //console.log("Agregar nodo: " + key);
+            // console.log("cont: " + countNodos);
+              
+              Konva.Image.fromURL(botones[key].scr, function(darthNode) {
+                      posXY = getPosNodoXY();
+                      darthNode.setAttrs({
+                        x: posXY.x,
+                        y: posXY.y,
+                        scaleX: botones[key].scaleX ,
+                        scaleY: botones[key].scaleY ,
+                        onload: AgregarFechas(),
+                        draggable: true
+                  });
+                  layer_nodos.add(darthNode);
+                  layer_nodos.batchDraw();
+                  //this.moveUp();
+
+                  // al mover cualquier nodo redibuja las flechas 
+                  darthNode.on('dragmove', function() {
+                      console.log("dragmove")
+                      AgregarFechas();
+                  });
+                  darthNode.on('touchmove', function() {
+                      console.log("touchmove")
+                      AgregarFechas();
+                  });
+
+                  darthNode.on('dragend', function() {
+                      console.log("dragend")
+                      ActualizaultimoNodoXY();
+                  });
+                  
+              });
+            }
+            else
+            {
+              writeMessage("No se pueden agregar mas nodos, maximo alcanzado");
+            };
+        
+      };
+
+// agregar flechas -------------
+    //agrega las flechas
+    function AgregarFechas()
+    {
+      // si hay mas de un nodo dibuja las flechas
+      if (countNodos > 1)
+      {       
+              
+              layer_flechas.destroy();   // borra el layer del escenario
+              stage_nodos.add(layer_flechas);  // agregar el layer al escenario
+
+              var lengthNodos = layer_nodos.children.length - 1;
+              for (var n = 0; n < lengthNodos ; n++)
+              {
+                 // console.log(layer_nodos.children[n].attrs);
+                  var objFrom = layer_nodos.children[n].attrs;
+                  var fromXY = {x:objFrom.x, y:objFrom.y };
+
+                  var objTo = layer_nodos.children[n+1].attrs;
+                  var toXY ={x:objTo.x,y:objTo.y };
+
+                  drawflecha(fromXY,toXY);
+              };
+      }
+    };
+
+    function getPuntaFinFlecha(from, to) {                
+      from.x = from.x + 36;
+      from.y = from.y + 36;
+      to.x = to.x+ 32;
+      to.y = to.y + 32;
+
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        let angle = Math.atan2(-dy, dx);
+        //console.log(angle);
+        const radius = 30;
+
+        return [
+          from.x + -radius * Math.cos(angle + Math.PI),
+          from.y + radius * Math.sin(angle + Math.PI),
+          to.x + -radius * Math.cos(angle) + 5,
+          to.y + radius * Math.sin(angle) + 5
+        ];
+      }
+
+     function drawflecha(from,to) {
+        var line_Arrow = new Konva.Arrow({       
+            fill: 'black',
+            stroke: 'black',
+            draggable: false,
+            strokeWidth: 4
+        });
+        var p = getPuntaFinFlecha( from, to);
+        //var p = getConnectorPoints(nodos[0][0].posicion, nodos[1][0].posicion);
+
+        line_Arrow.points (p);
+        layer_flechas.add(line_Arrow);
+        line_Arrow.moveToTop();
+        //layer_flechas.clearBeforeDraw ( true ) ;
+        layer_flechas.draw();
+     };
+
+// graba el stage
+      function save_stage_nodos() {
+        var dataURL = stage_nodos.toDataURL();
+        var name = "lab.png";
+        var link = document.createElement('a');
+        link.download = name;
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+      }
+
+// comunicacion con socket io
+     var socket = io(); //load socket.io-client and connect to the host that serves the page
+     socket.username = "cliente";
+     socket.emit('username',socket.username);
+
+     // agregar robots
+     var g_robot_mac = "";
+		 var g_robot_name = "?";
+		 var g_array_Robot_ID = [];
+
+     function agregar_robot()
+			{
+				sMenu = "";
+			   for (i = 0; i < g_array_Robot_ID.length; i++) {   
+    			  sMenu = sMenu + "<div >";
+				    sMenu = sMenu + "<a name='menu_robot' id='"+ i + "'>";
+				    sMenu = sMenu + "<img src='images/robot.png' name='menu_robot' id='"+ i + "' alt=''  width='30' height='30' style='vertical-align: middle;' />";
+						sMenu = sMenu + " " + g_array_Robot_ID[i].name + "</a></div>";			
+			  //console.log(sMenu);
+			   }
+				document.getElementById("robots_menu").innerHTML = sMenu;
+			}
+    
+ 
+
+    socket.on('mensaje_server', function(robot_mac,accion) {
+        console.log("Server> robot_mac: " + robot_mac + " accion: "+ accion);
+    });
+
+
+    function orden_robot(robot_mac,accion)
+		  {
+				//console.log("Robot mac: " + robot_mac);
+				//console.log("Accion: " + accion);	
+				socket.emit('mensaje_control',robot_mac, accion);		
+		  }
+
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 const logger = require('./logger');
-const tunnel = require('./services/tunnel');
+const socketService = require('./services/socket.service');
 
-const {engine,sockets} = tunnel.io;
+const {engine,sockets} = socketService.io;
 
 const CHANNELLS = {
     CONNECTED : 'robots-conectados',
