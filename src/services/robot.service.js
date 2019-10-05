@@ -1,5 +1,5 @@
-const logger = require('./logger');
-const socketService = require('./services/socket.service');
+const logger = require('../logger');
+const socketService = require('./socket.service');
 
 const {engine,sockets} = socketService.io;
 

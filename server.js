@@ -1,23 +1,21 @@
+const config = require('config');
 const express = require('express');
 const listEndpoints = require('express-list-endpoints');
-const package = require('./package');
 const logger = require('./src/logger');
+const package = require('./package');
+const linsteners = require('./src/listeners');
 const socketService = require('./src/services/socket.service');
-const routes = require('./src/ws/routes');
 const server = express();
 
-const PORT = 8080;
-
-server.use(express.static(__dirname + '/public'));
-
-server.use('/', routes);
-
-listEndpoints(server).map(({methods, path}) => logger.info(`Exposed ${path} :: (${methods.join(',')})`));
-
+const PORT = config.get('port');
 
 const http = socketService.setup(server);
+server.use(express.static(__dirname + '/public'));
+server.use('/', require('./src/ws/routes'));
 
+linsteners();
 
+listEndpoints(server).map(({methods, path}) => logger.info(`Exposed ${path} :: (${methods.join(',')})`));
 
 http.listen(PORT, () => logger.log(`${package.name} v${package.version} listening on port ${PORT}`));
 

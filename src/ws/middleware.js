@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 const logger = require('../logger');
-const users = require('../users');
+const {getById} = require('../services/user.service');
 
 const valid_user_needed = (req, res) => {
   const {user_id} = req.params;
@@ -13,7 +13,7 @@ const valid_user_needed = (req, res) => {
   }
 
   try {
-    req.user = users.getById(user_id);
+    req.user = getById(user_id);
     next();
   } catch(error) {
     logger.info("Validation error", error);

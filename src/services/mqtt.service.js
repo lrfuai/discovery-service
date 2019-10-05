@@ -1,8 +1,8 @@
-const config = require('../../config');
-const logger = require('../logger');
+const config = require('config');
 const mqtt = require('mqtt');
+const logger = require('../logger');
 
-const ENDPOINT = `mqtt://${config.mqtt.endpoint}`;
+const ENDPOINT = `mqtt://${config.get("mqtt.endpoint")}`;
 
 const client = mqtt.connect(ENDPOINT);
 
