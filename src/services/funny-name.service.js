@@ -25,5 +25,5 @@ const Animales = [
 const randomInt = (low, high) => Math.floor(Math.random() * (high - low + 1) + low);
 
 module.exports = {
-    get: () => `${Animales[randomInt(0,Animales.length)]} ${Adjetivos[randomInt(0,Adjetivos.length)]}`,
+    get: () => `${Animales[randomInt(0,Animales.length-1)]} ${Adjetivos[randomInt(0,Adjetivos.length-1)]}`,
 };
