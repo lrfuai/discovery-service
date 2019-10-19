@@ -5,13 +5,19 @@ const io = socketService.io();
 
 let users = [];
 
+let sockets = {};
+
+
 io.on('connection', socket => {
-  const user = { id: socket.id, alias: funnyName.get(), socket};
+  const user = { id: socket.id, name: funnyName.get()};
+  sockets[socket.id] = socket;
+
   users.push(user);
   emit(Events.USER_JOINED, user);
 
   socket.on('disconect',() => {
     users = users.filter(aUser => aUser.id !== user.id);
+    delete sockets[id];
     emit(Events.USER_LEFT, user);
   })
 });
@@ -26,5 +32,11 @@ const getById = id => {
 
 module.exports = {
   users,
-  getById
+  getById,
+  sockets: (user_id) => {
+    if(!sockets[user_id]) {
+      throw new Error(`Unable to find socket id ${user_id}`, { users: users.map(({id}) => id),available: Object.keys(sockets)});
+    }
+    return sockets[user_id];
+  }
 };

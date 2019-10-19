@@ -3,7 +3,7 @@ const express = require('express');
 const listEndpoints = require('express-list-endpoints');
 const logger = require('./src/logger');
 const package = require('./package');
-const linsteners = require('./src/listeners');
+const listeners = require('./src/listeners');
 const socketService = require('./src/services/socket.service');
 const server = express();
 
@@ -13,7 +13,7 @@ const http = socketService.setup(server);
 server.use(express.static(__dirname + '/public'));
 server.use('/', require('./src/ws/routes'));
 
-linsteners();
+listeners();
 
 listEndpoints(server).map(({methods, path}) => logger.info(`Exposed ${path} :: (${methods.join(',')})`));
 
