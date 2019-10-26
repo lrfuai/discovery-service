@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
-const logger = require('../logger');
-const {getById} = require('../services/user.service');
+const logger = require('../../logger');
+const {getById} = require('../../model/user');
 
 const valid_user_needed = (req, res) => {
   const {user_id} = req.params;

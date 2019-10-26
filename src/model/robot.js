@@ -1,4 +1,4 @@
-const io = require('./socket.service').io();
+const io = require('../comunication/socket-service').io();
 
 const CHANNELLS = {
     CONNECTED : 'robots-conectados',

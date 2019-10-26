@@ -1,12 +1,11 @@
-const socketService = require('./socket.service');
-const funnyName = require('./funny-name.service');
+const socketService = require('../comunication/socket-service');
+const funnyName = require('../services/funny-name.service');
 const {Events,emit} = require('../events');
 const io = socketService.io();
 
 let users = [];
 
 let sockets = {};
-
 
 io.on('connection', socket => {
   const user = { id: socket.id, name: funnyName.get()};

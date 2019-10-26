@@ -1,6 +1,6 @@
-const io = require('../services/socket.service').io();
-const { robots } = require('../services/robot.service');
-const { users, sockets } = require('../services/user.service');
+const io = require('../comunication/socket-service').io();
+const { robots } = require('../model/robot');
+const { users, sockets } = require('../model/user');
 
 module.exports = ({ Events, on }) => {
 
