@@ -3,6 +3,7 @@ const {EventEmitter} = require('events');
 const Emitter = new EventEmitter();
 
 const Events = {
+    WELLCOME: 'wellcome',
     
     USER_JOINED : 'ar.lrf.user.joined',
     USER_LEFT : 'ar.lrf.user.left',

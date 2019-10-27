@@ -7,13 +7,13 @@ module.exports = ({ Events, on }) => {
   on(Events.ROBOT_JOINED, ({ id, name, socket, event }) => {
 
     // Notify all robot joined
-    io.emit(Events.ROBOT_JOINED, { id, name });
+    io.emit(Events.ROBOT_JOINED, { id, name, event });
   });
 
   // Every Robot Left
-  on(Events.ROBOT_LEFT,  ({ id, name }) => {
+  on(Events.ROBOT_LEFT,  ({ id, name, event }) => {
     // Notify all robot left
-    io.emit(Events.ROBOT_LEFT, { id, name });
+    io.emit(Events.ROBOT_LEFT, { id, name, event });
   });
 
 };
