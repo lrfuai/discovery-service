@@ -1,9 +1,12 @@
+const http = require('http');
+const socketIO = require('socket.io');
+
 let io;
 
 const setup = (server) => {
-    const http = require('http').createServer(server) //require http server, and create server with function handler()
-    io = require('socket.io')(http) //require socket.io module and pass the http object (server)
-    return http;
+    httpServer = http.createServer(server) //require http server, and create server with function handler()
+    io = socketIO(httpServer) //require socket.io module and pass the http object (server)
+    return httpServer;
 };
 
 module.exports = {

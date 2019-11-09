@@ -1,8 +1,8 @@
 const Joi = require('@hapi/joi');
 const logger = require('../../logger');
-const {getById} = require('../../model/user');
 
 const valid_user_needed = (req, res) => {
+  const {getById} = require('../../model/user');
   const {user_id} = req.params;
 
   const {error} = Joi.validate(Joi.string().min(3),user_id);

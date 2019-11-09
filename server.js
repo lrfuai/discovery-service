@@ -6,11 +6,17 @@ const logger = require('./src/logger');
 
 // Starting API / WEB / SOCKETS Service
 const server = express();
-const socketService = require('./src/comunication/socket-service');
-const http = socketService.setup(server); // Socket Service
-server.use(express.static(__dirname + '/public')); // Public Static Web Service
+
+// REST Web Api Service
 const webService = require('./src/comunication/web-service');
-webService(server); // REST Web Api Service
+webService(server);
+
+// Public Static Web Service
+server.use(express.static(__dirname + '/public'));
+
+// Socket Service
+const socketService = require('./src/comunication/socket-service');
+const http = socketService.setup(server);
 
 // Register Event Listeners
 const listeners = require('./src/listeners');
