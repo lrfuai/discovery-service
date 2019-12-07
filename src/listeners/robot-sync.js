@@ -4,7 +4,7 @@ const { robots } = require('../model/robot');
 module.exports = ({ Events, on }) => {
 
   // Every Robot Joined
-  on(Events.ROBOT_JOINED, ({ id, name, socket, event }) => {
+  on(Events.ROBOT_JOINED, ({ id, name, event }) => {
 
     // Notify all robot joined
     io.emit(Events.ROBOT_JOINED, { id, name, event });

@@ -20,8 +20,16 @@ class ComunicationController {
   };
   socket= undefined;
 
-  constructor() {
+  constructor(config) {
+    const {
+      debug = true 
+    } = config; 
     this.socket = io(); //load socket.io-client and connect to the host that serves the page
+    if(debug) {
+      Object.keys(this.Events).map((key) => this.socket.on(this.Events[key], payload => {
+        console.log(payload.event, payload)
+      }));
+    }
   }
 
   get Events() { return this.Events }
@@ -33,12 +41,6 @@ class ComunicationController {
     }
     this.socket.on(event, handler)
   }
-
-  debug() {
-    Object.keys(this.Events).map((key) => this.socket.on(this.Events[key], payload => {
-      console.log(payload.event, payload)
-    }));
-  }
 }
 
 /**
@@ -46,14 +48,15 @@ class ComunicationController {
  * 
  */
 class UserController {
-  users = {};
-  me = undefined;
+  _users = {};
+  _me = undefined;
 
   constructor(comunication) {
     comunication.on(comunication.Events.WELLCOME, payload => {
-      const user = Object.assign({},payload);
+      const { users} = Object.assign({},payload);
       delete user.event;
-      this.me = user;
+      this._me = user;
+      this._users = users
     });
     comunication.on(comunication.Events.USER_JOINED, payload => {
       const user = Object.assign({},payload);
@@ -65,18 +68,14 @@ class UserController {
     });
   }
 
-  get all() {
-    return this.users
-  }
+  get all() { return this._users }
 
-  get me() {
-    return this.me
-  }
+  get me() { return this._me }
 
   async rename(name) {
     try {
-      const user = await fetch(`/api/users/${this.me.id}`, { method: 'PUT', body: { name } })
-      me.name = user.name;
+      const user = await fetch(`/api/users/${this._me.id}`, { method: 'PUT', body: { name } })
+      this._me.name = user.name;
     } catch (err) {
       console.error('Error Updating Username', err);
     }
@@ -103,18 +102,28 @@ class RobotController {
   }
 }
 
-function App(debug = true) {
-  const comunicationController = new ComunicationController();
-  if(debug) {
-    comunicationController.debug();
-  }
-  const userController = new UserController(comunicationController);
-  const robotController = new RobotController(comunicationController);
-  return {
-    controllers: {
-      comunication: comunicationController,
-      user: userController,
-      robot: robotController
+class App {
+
+  _comunicationController;
+  _userController;
+  _robotController;
+
+  constructor(config) {
+    this._comunicationController = new ComunicationController(config);
+    this_userController = new UserController(this._comunicationController);
+    this_robotController = new RobotController(this._comunicationController);
+    return {
+      controllers: {
+        comunication: comunicationController,
+        user: userController,
+        robot: robotController
+      }
     }
   }
+
+  get Comunication() { return this._comunicationController; }
+
+  get User() { return this._userController; }
+
+  get Robot() { return this._robotController; }
 }

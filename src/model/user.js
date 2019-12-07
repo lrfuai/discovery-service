@@ -9,7 +9,7 @@ let sockets = {};
 
 io.on('connection', socket => {
   const user = { id: socket.id, name: funnyName.get()};
-  sockets[socket.id] = socket;
+  sockets[user.id] = socket;
 
   users.push(user);
   emit(Events.USER_JOINED, user);
