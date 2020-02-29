@@ -5,7 +5,6 @@ module.exports = ({ Events, on }) => {
 
   // Every Robot Joined
   on(Events.ROBOT_JOINED, ({ id, name, event }) => {
-
     // Notify all robot joined
     io.emit(Events.ROBOT_JOINED, { id, name, event });
   });
@@ -15,5 +14,5 @@ module.exports = ({ Events, on }) => {
     // Notify all robot left
     io.emit(Events.ROBOT_LEFT, { id, name, event });
   });
-
+  
 };

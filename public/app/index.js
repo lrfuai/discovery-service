@@ -4,42 +4,39 @@
  * 
  */
 class ComunicationController {
-  Events = {
+  _Events = {
     WELLCOME: 'wellcome',
-  
+
     USER_JOINED: 'ar.lrf.user.joined',
     USER_LEFT: 'ar.lrf.user.left',
-  
+
     ROBOT_JOINED: 'ar.lrf.robot.joined',
     ROBOT_LEFT: 'ar.lrf.robot.left',
-  
+
     TEAM_CREATED: 'ar.lrf.team.created',
     TEAM_USER_JOINED: 'ar.lrf.team.user_joined',
     TEAM_USER_LEFT: 'ar.lrf.team.user_left',
     TEAM_DELETED: 'ar.lrf.team.deleted',
   };
-  socket= undefined;
+  _socket = undefined;
 
-  constructor(config) {
-    const {
-      debug = true 
-    } = config; 
-    this.socket = io(); //load socket.io-client and connect to the host that serves the page
-    if(debug) {
-      Object.keys(this.Events).map((key) => this.socket.on(this.Events[key], payload => {
+  constructor() {
+    this._socket = io(); //load socket.io-client and connect to the host that serves the page
+    Object.keys(this._Events).map(
+      key => this._socket.on(this._Events[key], payload => {
         console.log(payload.event, payload)
-      }));
-    }
+      })
+    );
   }
 
-  get Events() { return this.Events }
+  get Events() { return this._Events }
 
   on(event, handler) {
-    const found = Object.values(this.Events).find( evtValue => evtValue === event);
-    if(!found) {
+    const found = Object.values(this._Events).find(evtValue => evtValue === event);
+    if (!found) {
       throw new Error(`Unable to listen Undeclared event '${event}'`);
     }
-    this.socket.on(event, handler)
+    this._socket.on(event, handler)
   }
 }
 
@@ -53,18 +50,17 @@ class UserController {
 
   constructor(comunication) {
     comunication.on(comunication.Events.WELLCOME, payload => {
-      const { users} = Object.assign({},payload);
-      delete user.event;
+      const { user, users } = payload;
       this._me = user;
       this._users = users
     });
     comunication.on(comunication.Events.USER_JOINED, payload => {
-      const user = Object.assign({},payload);
+      const user = Object.assign({}, payload);
       delete user.event;
-      this.users[user.id] = Object.assign({},payload);
+      this._users[user.id] = Object.assign({}, payload);
     });
     comunication.on(comunication.Events.USER_LEFT, payload => {
-      delete this.users[payload.id];
+      delete this._users[payload.id];
     });
   }
 
@@ -82,19 +78,26 @@ class UserController {
   }
 }
 
-
+/**
+ * 
+ * 
+ */
 class RobotController {
-  robots = {};
+  _robots = {};
 
   constructor(comunication) {
+    comunication.on(comunication.Events.WELLCOME, payload => {
+      const { robots } = payload;
+      this._robots = robots;
+    });
     comunication.on(comunication.Events.ROBOT_JOINED, payload => {
-      const robot = Object.assign({},payload);
+      const robot = Object.assign({}, payload);
       delete robot.event;
-      this.robots[payload.id] = robot;
+      this._robots[payload.id] = robot;
     });
     comunication.on(comunication.Events.ROBOT_LEFT, payload => {
-      delete this.robots[payload.id];
-    });    
+      delete this._robots[payload.id];
+    });
   }
 
   get all() {
@@ -102,6 +105,10 @@ class RobotController {
   }
 }
 
+/**
+ * 
+ * 
+ */
 class App {
 
   _comunicationController;
@@ -110,15 +117,8 @@ class App {
 
   constructor(config) {
     this._comunicationController = new ComunicationController(config);
-    this_userController = new UserController(this._comunicationController);
-    this_robotController = new RobotController(this._comunicationController);
-    return {
-      controllers: {
-        comunication: comunicationController,
-        user: userController,
-        robot: robotController
-      }
-    }
+    this._userController = new UserController(this._comunicationController);
+    this._robotController = new RobotController(this._comunicationController);
   }
 
   get Comunication() { return this._comunicationController; }

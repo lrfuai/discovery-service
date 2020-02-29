@@ -9,13 +9,15 @@ module.exports = ({ Events, on }) => {
   // Every User Joined
   on(Events.USER_JOINED, ({ id, name, event }) => {
 
-    // Notify all user joined
-    io.emit(event, { id, name, event});
-  
+    const user = { id, name };
+
     // Send wellcome message to user 
-    sockets(id).emit(Events.WELLCOME, { robots, users, event: Events.WELLCOME});
+    sockets(id).emit(Events.WELLCOME, { robots, users, user, event: Events.WELLCOME });
+
+    // Notify all user joined
+    io.emit(event, { id, name, event });
   });
-  
+
   // Every User Left
   on(Events.USER_LEFT, ({ id, name, event }) => {
 
