@@ -4,12 +4,18 @@
 	<meta charset="UTF-8">
 	<meta name="MobileOptimized" content="width" />
 	<meta name="HandheldFriendly" content="true" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 	<script src="app/index.js"></script>
 	<script>
-		const app = new App();
+    const app = new App();
+    Object.values(app.Comunication.Events).map( event => {
+      app.Comunication.on(event, payload => {
+        $('#dom-log').append($(`<div><b>${payload.event}</b><pre>${JSON.stringify(payload)}</pre><div>`));
+      })
+    });
 	</script>
 	<title>Prueba Ale</title>
 
@@ -17,7 +23,7 @@
 <body>
 	<h1> Laboratorio de robotica fisica</h1>
 
-	<div id="interface">
+	<div id="dom-log">
 		<b>Mensajes:</b>
 	</div>
 </body>

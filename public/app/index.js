@@ -110,7 +110,6 @@ class RobotController {
  * 
  */
 class App {
-
   _comunicationController;
   _userController;
   _robotController;
